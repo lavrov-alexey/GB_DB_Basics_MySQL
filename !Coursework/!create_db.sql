@@ -179,10 +179,12 @@ DROP TABLE IF EXISTS photos;
 CREATE TABLE photos(
     id SERIAL PRIMARY KEY,
     think_id BIGINT UNSIGNED NOT NULL COMMENT 'Ссылка на вещь',
-    file_path VARCHAR(250) NOT NULL COMMENT 'Путь к файлу',
-    description TEXT,
+    file_path VARCHAR(260) NOT NULL COMMENT 'Путь к файлу',
+    description VARCHAR(300) COMMENT 'Описание к файлу',
     is_deleted BOOL NOT NULL DEFAULT FALSE,
     created_at DATETIME DEFAULT NOW(),
     updated_at DATETIME DEFAULT NOW() ON UPDATE NOW(),
+    INDEX think_id_idx (think_id),
+    INDEX description_idx (description),
     FOREIGN KEY fk_think_id (think_id) REFERENCES thinks(id) ON UPDATE CASCADE ON DELETE CASCADE
 ) COMMENT 'Фотографии';

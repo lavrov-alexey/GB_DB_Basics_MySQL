@@ -22,7 +22,7 @@ CREATE TABLE types_storage(
 DROP TABLE IF EXISTS owners;
 CREATE TABLE owners(
     id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    first_name VARCHAR(30),
+    first_name VARCHAR(30) NOT NULL,
     second_name VARCHAR(30),
     last_name VARCHAR(30),
     birthday DATE,
@@ -38,6 +38,7 @@ CREATE TABLE storages(
     owner_id INT UNSIGNED COMMENT 'Владелец хранилища',
     name VARCHAR(80) NOT NULL,
     is_deleted BOOL NOT NULL DEFAULT FALSE,
+    UNIQUE (type_storage_id, object_id, owner_id),
     FOREIGN KEY fk_type_storage (type_storage_id) REFERENCES types_storage(id) ON UPDATE CASCADE ON DELETE RESTRICT,
     FOREIGN KEY fk_object_id (object_id) REFERENCES objects(id) ON UPDATE CASCADE ON DELETE RESTRICT,
     FOREIGN KEY fk_owner_id (owner_id) REFERENCES owners(id) ON UPDATE CASCADE ON DELETE SET NULL
@@ -73,9 +74,10 @@ CREATE TABLE cat_things_sizes(
 DROP TABLE IF EXISTS manufacturers;
 CREATE TABLE manufacturers(
     id INT UNSIGNED AUTO_INCREMENT NOT NULL PRIMARY KEY,
-    rus_name VARCHAR(50) NOT NULL UNIQUE,
-    eng_name VARCHAR(50) NOT NULL UNIQUE,
-    is_deleted BOOL NOT NULL DEFAULT FALSE
+    rus_name VARCHAR(50) NOT NULL,
+    eng_name VARCHAR(50) NOT NULL,
+    is_deleted BOOL NOT NULL DEFAULT FALSE,
+    UNIQUE (rus_name, eng_name)
 ) COMMENT 'Каталог производителей';
 
 DROP TABLE IF EXISTS th_statuses;

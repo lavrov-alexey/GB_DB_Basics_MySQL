@@ -1,25 +1,37 @@
-DROP DATABASE IF EXISTS db_home_storage;
-CREATE DATABASE db_home_storage;
 USE db_home_storage;
 
-DROP TABLE IF EXISTS objects;
+/*DROP TABLE IF EXISTS objects;
 CREATE TABLE objects(
     id INT UNSIGNED AUTO_INCREMENT NOT NULL PRIMARY KEY,
     name VARCHAR(50) NOT NULL,
     address VARCHAR(150) NOT NULL,
     description VARCHAR(200),
     is_deleted BOOL NOT NULL DEFAULT FALSE
-) COMMENT 'Справочник объектов (дом, квартира, гараж, дача)';
+) COMMENT 'Справочник объектов (дом, квартира, гараж, дача)';*/
 
-DROP TABLE IF EXISTS types_storage;
+INSERT INTO objects (name, address) VALUES
+    ('Квартира', 'г.Тула, ул.Ф.Энгельса, д.16, кв.330'),
+    ('Дача', 'Тул.обл., Ленинский р-н, пос.Хомяково, СНТ "Родник"'),
+    ('Квартира бабы Гали', 'г.Тула, ул.Демонстрации, д.10, кв.87'),
+    ('Квартира бабы Светы', 'г.Тула, ул.Демонстрации, д.10, кв.87');
+    
+    
+/*DROP TABLE IF EXISTS types_storage;
 CREATE TABLE types_storage(
     id INT UNSIGNED AUTO_INCREMENT NOT NULL PRIMARY KEY,
     alias VARCHAR(20) NOT NULL UNIQUE COMMENT 'Краткое название',
     name VARCHAR(100) COMMENT 'Полное наименование',
     is_deleted BOOL NOT NULL DEFAULT FALSE
-) COMMENT 'Типы хранилищ';
+) COMMENT 'Типы хранилищ';*/
 
-DROP TABLE IF EXISTS owners;
+INSERT INTO types_storage (alias, name) VALUES
+    ('ШКФ', 'Шкаф'),
+    ('КМД', 'Комод'),
+    ('АНТР', 'Антресоль'),
+    ('СТЛЖ', 'Стеллаж');
+
+
+/*DROP TABLE IF EXISTS owners;
 CREATE TABLE owners(
     id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     alias VARCHAR(30) UNIQUE COMMENT 'Прозвище, позывной',
@@ -28,8 +40,18 @@ CREATE TABLE owners(
     last_name VARCHAR(30),
     birthday DATE,
     is_deleted BOOL NOT NULL DEFAULT FALSE,
-    UNIQUE (alias, first_name, second_name, last_name)
-) COMMENT 'Владельцы вещей';
+    UNIQUE (first_name, second_name, last_name)
+) COMMENT 'Владельцы вещей';*/
+
+INSERT INTO owners (alias, first_name, second_name, last_name, birthday) VALUES
+    ('Общее', 'Алексей', 'Александрович', 'Лавров', 1977-11-02),
+    ('Папа', 'Алексей', 'Александрович', 'Лавров', 1977-11-02),
+    ('Мама', 'Екатерина', 'Павловна', 'Лаврова', 1985-11-07),
+    ('Сын', 'Сережа', NULL, 'Лавров', 2012-07-26),
+    ('Дочь', 'Маша', NULL, 'Лаврова', 2016-05-31),
+    ('Баба Галя', 'Галина', 'Сергеевна', 'Лаврова', 1955-05-27),
+    ('Баба Света', 'Светлана', 'Николаевна', 'Кочкина', NULL);
+
 
 DROP TABLE IF EXISTS storages;
 CREATE TABLE storages(

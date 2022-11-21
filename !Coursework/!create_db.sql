@@ -2,48 +2,71 @@ DROP DATABASE IF EXISTS db_home_storage;
 CREATE DATABASE db_home_storage;
 USE db_home_storage;
 
-DROP TABLE IF EXISTS objects;
-CREATE TABLE objects(
-    id INT UNSIGNED AUTO_INCREMENT NOT NULL PRIMARY KEY,
-    name VARCHAR(50) NOT NULL,
-    address VARCHAR(150) NOT NULL,
-    description VARCHAR(200),
-    is_deleted BOOL NOT NULL DEFAULT FALSE
-) COMMENT 'Справочник объектов (дом, квартира, гараж, дача)';
-
-DROP TABLE IF EXISTS types_storage;
-CREATE TABLE types_storage(
-    id INT UNSIGNED AUTO_INCREMENT NOT NULL PRIMARY KEY,
-    alias VARCHAR(20) NOT NULL UNIQUE COMMENT 'Краткое название',
-    name VARCHAR(100) COMMENT 'Полное наименование',
-    is_deleted BOOL NOT NULL DEFAULT FALSE
-) COMMENT 'Типы хранилищ';
-
 DROP TABLE IF EXISTS owners;
 CREATE TABLE owners(
     id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    alias VARCHAR(30) UNIQUE COMMENT 'Прозвище, позывной',
+    nick_name VARCHAR(30) NOT NULL COMMENT 'Прозвище',
     first_name VARCHAR(30) NOT NULL,
     second_name VARCHAR(30),
     last_name VARCHAR(30),
     birthday DATE,
+    phone BIGINT(10) UNSIGNED COMMENT 'Номер телефона 10 знаков без междунар. кода',
+    email VARCHAR(80),
     is_deleted BOOL NOT NULL DEFAULT FALSE,
-    UNIQUE (alias, first_name, second_name, last_name)
+    UNIQUE (nick_name, first_name, second_name, last_name)
 ) COMMENT 'Владельцы вещей';
+
+DROP TABLE IF EXISTS objects;
+CREATE TABLE objects(
+    id INT UNSIGNED AUTO_INCREMENT NOT NULL PRIMARY KEY,
+    owner_id INT UNSIGNED NOT NULL COMMENT 'Владелец объекта',
+    name VARCHAR(50) NOT NULL,
+    address VARCHAR(150) NOT NULL,
+    description VARCHAR(200),
+    is_deleted BOOL NOT NULL DEFAULT FALSE,
+    FOREIGN KEY fk_owner (owner_id) REFERENCES owners(id) ON UPDATE CASCADE ON DELETE RESTRICT
+) COMMENT 'Справочник объектов (дом, квартира, гараж, дача)';
+
+DROP TABLE IF EXISTS rooms;
+CREATE TABLE rooms(
+    id INT UNSIGNED AUTO_INCREMENT NOT NULL PRIMARY KEY,
+    object_id INT UNSIGNED NOT NULL COMMENT 'Находится в объекте',
+    owner_id INT UNSIGNED COMMENT 'Владелец комнаты',
+    name VARCHAR(50) NOT NULL COMMENT 'Полное наименование',
+    is_deleted BOOL NOT NULL DEFAULT FALSE,
+    FOREIGN KEY fk_object (object_id) REFERENCES objects (id) ON UPDATE CASCADE ON DELETE RESTRICT,
+    FOREIGN KEY fk_owner (owner_id) REFERENCES owners(id) ON UPDATE CASCADE ON DELETE RESTRICT
+) COMMENT 'Справочник помещений/комнат в объектах';
+
+DROP TABLE IF EXISTS types_storage;
+CREATE TABLE types_storage(
+    id INT UNSIGNED AUTO_INCREMENT NOT NULL PRIMARY KEY,
+    name VARCHAR(50) NOT NULL,
+    is_deleted BOOL NOT NULL DEFAULT FALSE
+) COMMENT 'Справочник типов хранилищ';
 
 DROP TABLE IF EXISTS storages;
 CREATE TABLE storages(
     id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     type_storage_id INT UNSIGNED NOT NULL COMMENT 'Тип хранилища',
-    object_id INT UNSIGNED NOT NULL COMMENT 'Расположение хранилища',
-    owner_id INT UNSIGNED COMMENT 'Владелец хранилища',
-    name VARCHAR(80) NOT NULL,
+    room_id INT UNSIGNED NOT NULL COMMENT 'Нахождение в помещении',
+    name VARCHAR(50) NOT NULL,
     is_deleted BOOL NOT NULL DEFAULT FALSE,
-    UNIQUE (type_storage_id, object_id, owner_id),
+    UNIQUE (room_id, name),
     FOREIGN KEY fk_type_storage (type_storage_id) REFERENCES types_storage(id) ON UPDATE CASCADE ON DELETE RESTRICT,
-    FOREIGN KEY fk_object_id (object_id) REFERENCES objects(id) ON UPDATE CASCADE ON DELETE RESTRICT,
-    FOREIGN KEY fk_owner_id (owner_id) REFERENCES owners(id) ON UPDATE CASCADE ON DELETE SET NULL
-) COMMENT 'Хранилища вещей';
+    FOREIGN KEY fk_room (room_id) REFERENCES rooms(id) ON UPDATE CASCADE ON DELETE RESTRICT
+) COMMENT 'Хранилища вещей (шкафы, стеллажи и т.д.)';
+
+DROP TABLE IF EXISTS sub_storages;
+CREATE TABLE sub_storages(
+    id INT UNSIGNED AUTO_INCREMENT NOT NULL PRIMARY KEY,
+    storage_id INT UNSIGNED NOT NULL COMMENT 'Нахождение в хранилище',
+    owner_id INT UNSIGNED COMMENT 'Владелец хранилища',
+    name VARCHAR(100) COMMENT 'Полное наименование',
+    is_deleted BOOL NOT NULL DEFAULT FALSE,
+    UNIQUE (storage_id, name),
+    FOREIGN KEY fk_owner_id (owner_id) REFERENCES owners(id) ON UPDATE CASCADE ON DELETE RESTRICT
+) COMMENT 'Элементы хранилищ (полки, отделения и т.д.)';
 
 DROP TABLE IF EXISTS cat_things;
 CREATE TABLE cat_things(

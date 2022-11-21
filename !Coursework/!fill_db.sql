@@ -1,21 +1,88 @@
 USE db_home_storage;
 
+/*DROP TABLE IF EXISTS owners;
+CREATE TABLE owners(
+    id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    nick_name VARCHAR(30) NOT NULL COMMENT 'Прозвище',
+    first_name VARCHAR(30) NOT NULL,
+    second_name VARCHAR(30),
+    last_name VARCHAR(30),
+    birthday DATE,
+    phone BIGINT(10) UNSIGNED COMMENT 'Номер телефона 10 знаков без междунар. кода',
+    email VARCHAR(80),
+    is_deleted BOOL NOT NULL DEFAULT FALSE,
+    UNIQUE (nick_name, first_name, second_name, last_name)
+) COMMENT 'Владельцы вещей';*/
+
+INSERT INTO owners (nick_name, first_name, second_name, last_name, birthday, phone, email) VALUES
+    ('Общее', 'Семья', NULL, 'Лавровых', '2005-08-06', 9991234567, NULL),
+    ('Папа', 'Алексей', 'Александрович', 'Лавров', '1977-11-02', 9011234567, 'dad@mail.ru'),
+    ('Мама', 'Екатерина', 'Павловна', 'Лаврова', '1985-11-07', 9021234567, 'mom@mail.ru'),
+    ('Сын', 'Сережа', NULL, 'Лавров', '2012-07-26', 9031234567, 'son@mail.ru'),
+    ('Дочь', 'Маша', NULL, 'Лаврова', '2016-05-31', NULL, NULL),
+    ('Баба Галя', 'Галина', 'Сергеевна', 'Лаврова', '1955-05-27', 9981234567, 'grandma_LGS@mail.ru'),
+    ('Баба Света', 'Светлана', 'Николаевна', 'Кочкина', NULL, 9971234567, NULL);
+
+
 /*DROP TABLE IF EXISTS objects;
 CREATE TABLE objects(
     id INT UNSIGNED AUTO_INCREMENT NOT NULL PRIMARY KEY,
+    owner_id INT UNSIGNED NOT NULL COMMENT 'Владелец объекта',
     name VARCHAR(50) NOT NULL,
     address VARCHAR(150) NOT NULL,
     description VARCHAR(200),
-    is_deleted BOOL NOT NULL DEFAULT FALSE
+    is_deleted BOOL NOT NULL DEFAULT FALSE,
+    FOREIGN KEY fk_owner (owner_id) REFERENCES owners(id) ON UPDATE CASCADE ON DELETE RESTRICT
 ) COMMENT 'Справочник объектов (дом, квартира, гараж, дача)';*/
 
-INSERT INTO objects (name, address) VALUES
-    ('Квартира', 'г.Тула, ул.Ф.Энгельса, д.16, кв.330'),
-    ('Дача', 'Тул.обл., Ленинский р-н, пос.Хомяково, СНТ "Родник"'),
-    ('Квартира бабы Гали', 'г.Тула, ул.Демонстрации, д.10, кв.87'),
-    ('Квартира бабы Светы', 'г.Тула, ул.Демонстрации, д.10, кв.87');
-    
-    
+INSERT INTO objects (owner_id, name, address) VALUES
+    (1, 'Квартира', 'г.Тула, ул.Я.Гашека, д.7, кв.77'),
+    (6, 'Дача', 'Тул.обл., Ленинский р-н, пос.Дачный, СНТ "Урожай"'),
+    (6, 'Квартира бабы Гали', 'г.Тула, ул.Кр.Партизан, д.10, кв.88'),
+    (7, 'Квартира бабы Светы', 'г.Тула, ул.Я.Гашека, д.7, кв.99');
+
+
+/*DROP TABLE IF EXISTS rooms;
+CREATE TABLE rooms(
+    id INT UNSIGNED AUTO_INCREMENT NOT NULL PRIMARY KEY,
+    object_id INT UNSIGNED NOT NULL COMMENT 'Находится в объекте',
+    owner_id INT UNSIGNED COMMENT 'Владелец комнаты',
+    name VARCHAR(50) NOT NULL COMMENT 'Полное наименование',
+    is_deleted BOOL NOT NULL DEFAULT FALSE,
+    FOREIGN KEY fk_object (object_id) REFERENCES objects (id) ON UPDATE CASCADE ON DELETE RESTRICT,
+    FOREIGN KEY fk_owner (owner_id) REFERENCES owners(id) ON UPDATE CASCADE ON DELETE RESTRICT
+) COMMENT 'Справочник помещений/комнат в объектах';*/
+
+INSERT INTO rooms (object_id, owner_id, name) VALUES
+    (1, 1, 'Прихожая'),
+    (1, 1, 'Кухня'),
+    (1, 4, 'Сережина комната'),
+    (1, 5, 'Машина комната'),
+    (1, 1, 'Зал'),
+    (1, 1, 'Спальня'),
+    (1, 1, 'Ванная'),
+    (1, 1, 'Туалет'),
+    (1, 1, 'Балкон-лоджия'),
+    (2, 6, 'Дача, мал. комната'),
+    (2, 6, 'Дача, бол. комната'),
+    (2, 6, 'Дача, чердак'),
+    (2, 6, 'Сарай'),
+    (3, 6, 'Прихожая/коридор'),
+    (3, 6, 'Кухня'),
+    (3, 6, 'Зал'),
+    (3, 6, 'Спальня'),
+    (3, 6, 'Ванная'),
+    (3, 6, 'Туалет'),
+    (3, 6, 'Кладовка'),
+    (3, 6, 'Балкон-лоджия'),
+    (4, 7, 'Прихожая'),
+    (4, 7, 'Зал/кухня'),
+    (4, 7, 'Спальня'),
+    (4, 7, 'Кладовка'),
+    (4, 7, 'Ванная/туалет'),
+    (4, 7, 'Балкон-лоджия');
+        
+
 /*DROP TABLE IF EXISTS types_storage;
 CREATE TABLE types_storage(
     id INT UNSIGNED AUTO_INCREMENT NOT NULL PRIMARY KEY,
@@ -24,48 +91,91 @@ CREATE TABLE types_storage(
     is_deleted BOOL NOT NULL DEFAULT FALSE
 ) COMMENT 'Типы хранилищ';*/
 
-INSERT INTO types_storage (alias, name) VALUES
-    ('ШКФ', 'Шкаф'),
-    ('КМД', 'Комод'),
-    ('АНТР', 'Антресоль'),
-    ('СТЛЖ', 'Стеллаж');
+INSERT INTO types_storage (name) VALUES
+    ('Шкаф'),
+    ('Шкаф-купе'),
+    ('Встроенный шкаф'),
+    ('Навесной шкаф'),
+    ('Угловой шкаф'),
+    ('Сервант'),
+    ('Комод'),
+    ('Тумбочка'),
+    ('Антресоль'),
+    ('Стеллаж');
 
 
-/*DROP TABLE IF EXISTS owners;
-CREATE TABLE owners(
-    id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    alias VARCHAR(30) UNIQUE COMMENT 'Прозвище, позывной',
-    first_name VARCHAR(30) NOT NULL,
-    second_name VARCHAR(30),
-    last_name VARCHAR(30),
-    birthday DATE,
-    is_deleted BOOL NOT NULL DEFAULT FALSE,
-    UNIQUE (first_name, second_name, last_name)
-) COMMENT 'Владельцы вещей';*/
-
-INSERT INTO owners (alias, first_name, second_name, last_name, birthday) VALUES
-    ('Общее', 'Алексей', 'Александрович', 'Лавров', 1977-11-02),
-    ('Папа', 'Алексей', 'Александрович', 'Лавров', 1977-11-02),
-    ('Мама', 'Екатерина', 'Павловна', 'Лаврова', 1985-11-07),
-    ('Сын', 'Сережа', NULL, 'Лавров', 2012-07-26),
-    ('Дочь', 'Маша', NULL, 'Лаврова', 2016-05-31),
-    ('Баба Галя', 'Галина', 'Сергеевна', 'Лаврова', 1955-05-27),
-    ('Баба Света', 'Светлана', 'Николаевна', 'Кочкина', NULL);
-
-
-DROP TABLE IF EXISTS storages;
+/*DROP TABLE IF EXISTS storages;
 CREATE TABLE storages(
     id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     type_storage_id INT UNSIGNED NOT NULL COMMENT 'Тип хранилища',
-    object_id INT UNSIGNED NOT NULL COMMENT 'Расположение хранилища',
-    owner_id INT UNSIGNED COMMENT 'Владелец хранилища',
-    name VARCHAR(80) NOT NULL,
+    room_id INT UNSIGNED NOT NULL COMMENT 'Нахождение в помещении',
+    name VARCHAR(50) NOT NULL,
     is_deleted BOOL NOT NULL DEFAULT FALSE,
-    UNIQUE (type_storage_id, object_id, owner_id),
+    UNIQUE (room_id, name),
     FOREIGN KEY fk_type_storage (type_storage_id) REFERENCES types_storage(id) ON UPDATE CASCADE ON DELETE RESTRICT,
-    FOREIGN KEY fk_object_id (object_id) REFERENCES objects(id) ON UPDATE CASCADE ON DELETE RESTRICT,
-    FOREIGN KEY fk_owner_id (owner_id) REFERENCES owners(id) ON UPDATE CASCADE ON DELETE SET NULL
-) COMMENT 'Хранилища вещей';
+    FOREIGN KEY fk_room (room_id) REFERENCES rooms(id) ON UPDATE CASCADE ON DELETE RESTRICT
+) COMMENT 'Хранилища вещей (шкафы, стеллажи и т.д.)';*/
+
+INSERT INTO storages (type_storage_id, room_id, name) VALUES
+(2, 1, 'Шкаф в прихожей'),
+(8, 1, 'Белая тумбочка для сидения'),
+(3, 2, 'Хоз. шкаф'),
+(3, 1, 'Шкаф в прихожей'),
+(3, 1, 'Шкаф в прихожей'),
+;
+
+
+
+
+
+
+
+
+
+
+/*DROP TABLE IF EXISTS sub_storages;
+CREATE TABLE sub_storages(
+    id INT UNSIGNED AUTO_INCREMENT NOT NULL PRIMARY KEY,
+    alias VARCHAR(20) NOT NULL UNIQUE COMMENT 'Краткое название',
+    name VARCHAR(100) COMMENT 'Полное наименование',
+    is_deleted BOOL NOT NULL DEFAULT FALSE,
+    UNIQUE (alias, name)
+) COMMENT 'Элементы хранилищ';*/
+
+
+INSERT INTO sub_storages (alias, name) VALUES
+    ('ТМБ1', 'Тумба 1'),
+    ('ТМБ2', 'Тумба 2'),
+    ('ПКС1', 'Полка стекляная 1'),
+    ('ПКС2', 'Полка стекляная 2'),
+    ('ПКС3', 'Полка стекляная 3'),
+    ('ПКС4', 'Полка стекляная 4'),
+    ('ПКС5', 'Полка стекляная 5'),
+    ('ПКС6', 'Полка стекляная 6'),
+    ('ПЛК1', 'Полка 1'),
+    ('ПЛК1', 'Полка 2'),
+    ('ПЛК1', 'Полка 3'),
+    ('ПЛК1', 'Полка 4'),
+    ('ПЛК1', 'Полка 5'),
+    ('ПЛК1', 'Полка 6'),
+    ('ЯЩК1', 'Ящик 1'),
+    ('ЯЩК2', 'Ящик 2'),
+    ('ЯЩК3', 'Ящик 3'),
+    ('ЯЩК4', 'Ящик 4'),
+    ('ЯЩК5', 'Ящик 5'),
+    ('ЯЩК6', 'Ящик 6'),
+    ('АНТР1', 'Антресоль 1'),
+    ('АНТР2', 'Антресоль 2'),
+    ('ШТН1', 'Штанга для одежды 1'),
+    ('ШТН2', 'Штанга для одежды 2'),
+    ('ОТД1', 'Отделение 1'),
+    ('ОТД2', 'Отделение 2'),
+    ('КНТ1', 'Контейнер 1'),
+    ('КНТ2', 'Контейнер 2'),
+    ('КНТ3', 'Контейнер 3'),
+    ('КНТ4', 'Контейнер 4');
+
+
 
 DROP TABLE IF EXISTS cat_things;
 CREATE TABLE cat_things(

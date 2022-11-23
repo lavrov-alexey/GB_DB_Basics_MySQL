@@ -41,7 +41,7 @@ CREATE TABLE rooms(
 DROP TABLE IF EXISTS types_storage;
 CREATE TABLE types_storage(
     id INT UNSIGNED AUTO_INCREMENT NOT NULL PRIMARY KEY,
-    name VARCHAR(50) NOT NULL,
+    name VARCHAR(50) UNIQUE NOT NULL,
     is_deleted BOOL NOT NULL DEFAULT FALSE
 ) COMMENT 'Справочник типов хранилищ';
 

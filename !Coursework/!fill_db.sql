@@ -249,7 +249,11 @@ INSERT INTO cat_sizes (alias, rus_size, int_size) VALUES
     ('Обв-28', '28', '175мм'),  ('Обв-29', '29', '185мм'),  ('Обв-30', '30', '190мм'),
     ('Обв-31', '31', '195мм'), ('Обв-32', '32', '205мм'), ('Обв-37', '37', '235мм'),
     ('Обв-38', '38', '245мм'), ('Обв-43', '43', '275мм'), ('Обв-44', '44', '285мм'),
-    ('Обв-45', '45', '290мм');
+    ('Обв-45', '45', '290мм'),
+    ('ДетОджд-5л', '28', '105-110см'), ('ДетОджд-6л', '30', '111-116см'),
+    ('ДетОджд-7л', '30', '117-122см'), ('ДетОджд-8л', '32', '123-128см'),
+    ('ДетОджд-9л', '32', '129-134см'), ('ДетОджд-10л', '34', '135-140см'),
+    ('ДетОджд-11л', '36', '141-146см'), ('ДетОджд-12л', '38', '147-152см');
 
 
 /*DROP TABLE IF EXISTS cat_things_sizes;
@@ -274,37 +278,67 @@ INSERT INTO cat_things_sizes (cat_things_id, cat_sizes_id) VALUES
 /*DROP TABLE IF EXISTS manufacturers;
 CREATE TABLE manufacturers(
     id INT UNSIGNED AUTO_INCREMENT NOT NULL PRIMARY KEY,
-    rus_name VARCHAR(50) NOT NULL,
-    eng_name VARCHAR(50) NOT NULL,
+    rus_name VARCHAR(50),
+    eng_name VARCHAR(50),
+    web_site VARCHAR(50),
     is_deleted BOOL NOT NULL DEFAULT FALSE,
     UNIQUE (rus_name, eng_name)
-) COMMENT 'Каталог производителей';
+) COMMENT 'Каталог производителей';*/
 
-DROP TABLE IF EXISTS th_statuses;
+INSERT INTO manufacturers (rus_name, eng_name) VALUES
+    ('Акула', 'Acoola'), ('Фин Флэр', 'Finn Flare'), ('Футурино', 'Futurino'),
+    ('Хуппа', 'Huppa'), ('Лесси', 'Lassie'), ('Модис', 'MODIS'), ('Рейма', 'Reima'),
+    ('Села', 'Sela'), ('Котофей', NULL), ('Антилопа', 'Antilopa'), ('Кроксы', 'CROCS'),
+    ('Димар', 'Demar'), ('Куома', 'Kuoma'), (NULL, 'Shark Force'), (NULL, 'ANBER DERI');
+
+
+/*DROP TABLE IF EXISTS th_statuses;
 CREATE TABLE th_statuses(
     id INT UNSIGNED AUTO_INCREMENT NOT NULL PRIMARY KEY,
     status VARCHAR(20) NOT NULL UNIQUE,
-    note VARCHAR(100) NOT NULL COMMENT 'Примечание',
+    note VARCHAR(100) COMMENT 'Примечание',
     is_deleted BOOL NOT NULL DEFAULT FALSE
-) COMMENT 'Статусы вещей';
+) COMMENT 'Статусы вещей';*/
 
-DROP TABLE IF EXISTS cat_measures;
+INSERT INTO th_statuses (status) VALUES
+    ('Новое'), ('Используется'), ('На продажу'), ('На вырост'), ('Отдать'), 
+    ('Резерв'), ('На выброс');
+
+
+/*DROP TABLE IF EXISTS cat_measures;
 CREATE TABLE cat_measures(
     id INT UNSIGNED AUTO_INCREMENT NOT NULL PRIMARY KEY,
     rus_msr VARCHAR(50) NOT NULL UNIQUE,
-    eng_msr VARCHAR(50) NOT NULL UNIQUE,
+    eng_msr VARCHAR(50),
     is_deleted BOOL NOT NULL DEFAULT FALSE
-) COMMENT 'Справочник единиц измерения';
+) COMMENT 'Справочник единиц измерения';*/
 
-DROP TABLE IF EXISTS thinks;
+INSERT INTO cat_measures (rus_msr) VALUES
+    ('штуки'), ('пара'), ('комплект'), ('упаковка'), ('литры'); 
+
+
+/*DROP TABLE IF EXISTS cat_colors;
+CREATE TABLE cat_colors(
+    id INT UNSIGNED AUTO_INCREMENT NOT NULL PRIMARY KEY,
+    color VARCHAR(50) NOT NULL UNIQUE COMMENT 'Название цвета',
+    is_deleted BOOL NOT NULL DEFAULT FALSE
+) COMMENT 'Справочник цветов';*/
+
+INSERT INTO cat_colors (color) VALUES 
+    ('Белый'), ('Черный'), ('Серый'), ('Разноцветный'), ('Прозрачный'), ('Красный'), 
+    ('Оранжевый'), ('Желтый'), ('Зеленый'), ('Голубой'), ('Синий'), ('Фиолетовый'), ('Бежевый');
+
+
+/*DROP TABLE IF EXISTS thinks;
 CREATE TABLE thinks(
     id SERIAL PRIMARY KEY,
     cat_thing_id INT UNSIGNED COMMENT 'Категория вещи',
     cat_size_id INT UNSIGNED COMMENT 'Размер вещи',
     manufacturer_id INT UNSIGNED COMMENT 'Производитель вещи',
     name VARCHAR(200) NOT NULL COMMENT 'Наименование вещи',
-    th_count INT UNSIGNED DEFAULT 0 COMMENT 'Количество',
-    cat_measure_id INT UNSIGNED COMMENT 'Единица измерения',
+    th_count INT UNSIGNED DEFAULT 1 COMMENT 'Количество',
+    cat_measure_id INT UNSIGNED DEFAULT 1 COMMENT 'Единица измерения',
+    cat_color_id INT UNSIGNED COMMENT 'Цвет вещи',
     storage_id INT UNSIGNED COMMENT 'Место хранения',
     th_status_id INT UNSIGNED NOT NULL COMMENT 'Статус вещи',
     owner_id INT UNSIGNED COMMENT 'Владелец',
@@ -321,54 +355,35 @@ CREATE TABLE thinks(
     FOREIGN KEY fk_cat_size_id (cat_size_id) REFERENCES cat_sizes(id) ON UPDATE CASCADE ON DELETE RESTRICT,
     FOREIGN KEY fk_manufacturer_id (manufacturer_id) REFERENCES manufacturers(id) ON UPDATE CASCADE ON DELETE RESTRICT,
     FOREIGN KEY fk_cat_measure_id (cat_measure_id) REFERENCES cat_measures(id) ON UPDATE CASCADE ON DELETE RESTRICT,
+    FOREIGN KEY fk_cat_color_id (cat_color_id) REFERENCES cat_colors(id) ON UPDATE CASCADE ON DELETE RESTRICT,    
     FOREIGN KEY fk_storage_id (storage_id) REFERENCES storages(id) ON UPDATE CASCADE ON DELETE RESTRICT,
     FOREIGN KEY fk_th_status_id (th_status_id) REFERENCES th_statuses(id) ON UPDATE CASCADE ON DELETE RESTRICT,
     FOREIGN KEY fk_owner_id (owner_id) REFERENCES owners(id) ON UPDATE CASCADE ON DELETE RESTRICT
-) COMMENT 'Таблица вещей';
+) COMMENT 'Таблица вещей';*/
 
-DROP TABLE IF EXISTS thinks_history;
+INSERT INTO thinks (cat_thing_id, cat_size_id, manufacturer_id, name, cat_color_id, 
+storage_id, th_status_id, owner_id, date_next_check) VALUES
+    (1, 6, 14, 'Бежевая зимняя куртка с меховым капюшоном', 13, 1, 2, 2, '2023-02-28'),
+    (1, 5, 15, 'Старая черная дубленка', 2, 26, 3, 2, '2023-11-10');
+    
+
+
+/*DROP TABLE IF EXISTS thinks_history;
 CREATE TABLE thinks_history(
     think_id BIGINT UNSIGNED NOT NULL,
     changed_at DATETIME DEFAULT NOW() COMMENT 'Дата, время изменения',
-    old_cat_thing_id INT UNSIGNED COMMENT 'Старая категория вещи',
-    new_cat_thing_id INT UNSIGNED COMMENT 'Новая категория вещи',
-    old_cat_size_id INT UNSIGNED COMMENT 'Старый размер вещи',
-    new_cat_size_id INT UNSIGNED COMMENT 'Новый размер вещи',
-    old_manufacturer_id INT UNSIGNED COMMENT 'Старый производитель вещи',
-    new_manufacturer_id INT UNSIGNED COMMENT 'Новый производитель вещи',
     old_name VARCHAR(200) COMMENT 'Старое наименование вещи',
     new_name VARCHAR(200) COMMENT 'Новое наименование вещи',
     old_th_count INT UNSIGNED COMMENT 'Старое кол-во',
     new_th_count INT UNSIGNED COMMENT 'Новое кол-во',
-    old_cat_measure_id INT UNSIGNED COMMENT 'Старая единица измерения',
-    new_cat_measure_id INT UNSIGNED COMMENT 'Новая единица измерения',
     old_storage_id INT UNSIGNED COMMENT 'Старое место хранения',
     new_storage_id INT UNSIGNED COMMENT 'Новое место хранения',
     old_th_status_id INT UNSIGNED COMMENT 'Старый статус вещи',
     new_th_status_id INT UNSIGNED COMMENT 'Новый статус вещи',
     old_owner_id INT UNSIGNED COMMENT 'Старый владелец',
     new_owner_id INT UNSIGNED COMMENT 'Новый владелец',
-    old_date_buy DATE COMMENT 'Старая дата покупки',
-    new_date_buy DATE COMMENT 'Новая дата покупки',
-    old_price_buy INT UNSIGNED COMMENT 'Старая цена покупки, коп.',
-    new_price_buy INT UNSIGNED COMMENT 'Новая цена покупки, коп.',
-    old_date_sell DATE COMMENT 'Старая дата продажи',
-    new_date_sell DATE COMMENT 'Новая дата продажи',
-    price_sell INT UNSIGNED COMMENT 'Цена продажи, коп.',
-    old_date_next_check DATE COMMENT 'Старая дата следующей проверки',
-    new_date_next_check DATE COMMENT 'Новая дата следующей проверки',
-    old_is_deleted BOOL,
-    new_is_deleted BOOL,
     PRIMARY KEY think_date_idx(think_id, changed_at),
     FOREIGN KEY fk_think_id (think_id) REFERENCES thinks(id),
-    FOREIGN KEY fk_old_cat_thing_id (old_cat_thing_id) REFERENCES cat_things(id) ON UPDATE CASCADE ON DELETE SET NULL,
-    FOREIGN KEY fk_new_cat_thing_id (new_cat_thing_id) REFERENCES cat_things(id) ON UPDATE CASCADE ON DELETE SET NULL,
-    FOREIGN KEY fk_old_cat_size_id (old_cat_size_id) REFERENCES cat_sizes(id) ON UPDATE CASCADE ON DELETE SET NULL,
-    FOREIGN KEY fk_new_cat_size_id (new_cat_size_id) REFERENCES cat_sizes(id) ON UPDATE CASCADE ON DELETE SET NULL,
-    FOREIGN KEY fk_old_manufacturer_id (old_manufacturer_id) REFERENCES manufacturers(id) ON UPDATE CASCADE ON DELETE SET NULL,
-    FOREIGN KEY fk_new_manufacturer_id (new_manufacturer_id) REFERENCES manufacturers(id) ON UPDATE CASCADE ON DELETE SET NULL,
-    FOREIGN KEY fk_old_cat_measure_id (old_cat_measure_id) REFERENCES cat_measures(id) ON UPDATE CASCADE ON DELETE SET NULL,
-    FOREIGN KEY fk_new_cat_measure_id (new_cat_measure_id) REFERENCES cat_measures(id) ON UPDATE CASCADE ON DELETE SET NULL,
     FOREIGN KEY fk_old_storage_id (old_storage_id) REFERENCES storages(id) ON UPDATE CASCADE ON DELETE SET NULL,
     FOREIGN KEY fk_new_storage_id (new_storage_id) REFERENCES storages(id) ON UPDATE CASCADE ON DELETE SET NULL,
     FOREIGN KEY fk_old_th_status_id (old_th_status_id) REFERENCES th_statuses(id) ON UPDATE CASCADE ON DELETE SET NULL,

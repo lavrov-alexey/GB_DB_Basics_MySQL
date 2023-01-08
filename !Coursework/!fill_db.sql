@@ -154,10 +154,11 @@ INSERT INTO storages (type_storage_id, room_id, name) VALUES
 CREATE TABLE sub_storages(
     id INT UNSIGNED AUTO_INCREMENT NOT NULL PRIMARY KEY,
     storage_id INT UNSIGNED NOT NULL COMMENT 'Нахождение в хранилище',
-    owner_id INT UNSIGNED COMMENT 'Владелец элемента в хранилище',
-    name VARCHAR(100) COMMENT 'Наименование ',
+    owner_id INT UNSIGNED COMMENT 'Владелец хранилища',
+    name VARCHAR(100) COMMENT 'Полное наименование',
     is_deleted BOOL NOT NULL DEFAULT FALSE,
     UNIQUE (storage_id, name),
+    FOREIGN KEY fk_storage_id (storage_id) REFERENCES storages(id) ON UPDATE CASCADE ON DELETE RESTRICT,
     FOREIGN KEY fk_owner_id (owner_id) REFERENCES owners(id) ON UPDATE CASCADE ON DELETE RESTRICT
 ) COMMENT 'Элементы хранилищ (полки, отделения и т.д.)';*/
 
@@ -289,7 +290,8 @@ INSERT INTO manufacturers (rus_name, eng_name) VALUES
     ('Акула', 'Acoola'), ('Фин Флэр', 'Finn Flare'), ('Футурино', 'Futurino'),
     ('Хуппа', 'Huppa'), ('Лесси', 'Lassie'), ('Модис', 'MODIS'), ('Рейма', 'Reima'),
     ('Села', 'Sela'), ('Котофей', NULL), ('Антилопа', 'Antilopa'), ('Кроксы', 'CROCS'),
-    ('Димар', 'Demar'), ('Куома', 'Kuoma'), (NULL, 'Shark Force'), (NULL, 'ANBER DERI');
+    ('Димар', 'Demar'), ('Куома', 'Kuoma'), (NULL, 'Shark Force'), (NULL, 'ANBER DERI'),
+    ('Коламбия', 'Columbia');
 
 
 /*DROP TABLE IF EXISTS th_statuses;
@@ -339,7 +341,8 @@ CREATE TABLE thinks(
     th_count INT UNSIGNED DEFAULT 1 COMMENT 'Количество',
     cat_measure_id INT UNSIGNED DEFAULT 1 COMMENT 'Единица измерения',
     cat_color_id INT UNSIGNED COMMENT 'Цвет вещи',
-    storage_id INT UNSIGNED COMMENT 'Место хранения',
+    storage_id INT UNSIGNED NOT NULL COMMENT 'Место нахождения вещи',
+    sub_storage_id INT UNSIGNED COMMENT 'Место нахождения вещи',
     th_status_id INT UNSIGNED NOT NULL COMMENT 'Статус вещи',
     owner_id INT UNSIGNED COMMENT 'Владелец',
     date_buy DATE COMMENT 'Дата покупки',
@@ -357,15 +360,22 @@ CREATE TABLE thinks(
     FOREIGN KEY fk_cat_measure_id (cat_measure_id) REFERENCES cat_measures(id) ON UPDATE CASCADE ON DELETE RESTRICT,
     FOREIGN KEY fk_cat_color_id (cat_color_id) REFERENCES cat_colors(id) ON UPDATE CASCADE ON DELETE RESTRICT,    
     FOREIGN KEY fk_storage_id (storage_id) REFERENCES storages(id) ON UPDATE CASCADE ON DELETE RESTRICT,
+    FOREIGN KEY fk_sub_storage_id (sub_storage_id) REFERENCES sub_storages(id) ON UPDATE CASCADE ON DELETE RESTRICT,
     FOREIGN KEY fk_th_status_id (th_status_id) REFERENCES th_statuses(id) ON UPDATE CASCADE ON DELETE RESTRICT,
     FOREIGN KEY fk_owner_id (owner_id) REFERENCES owners(id) ON UPDATE CASCADE ON DELETE RESTRICT
 ) COMMENT 'Таблица вещей';*/
 
 INSERT INTO thinks (cat_thing_id, cat_size_id, manufacturer_id, name, cat_color_id, 
-storage_id, th_status_id, owner_id, date_next_check) VALUES
-    (1, 6, 14, 'Бежевая зимняя куртка с меховым капюшоном', 13, 1, 2, 2, '2023-02-28'),
-    (1, 5, 15, 'Старая черная дубленка', 2, 26, 3, 2, '2023-11-10');
-    
+storage_id, sub_storage_id, th_status_id, owner_id, date_next_check) VALUES
+    (1, 6, 14, 'Светлая зимняя куртка с меховым капюшоном', 13, 1, 10, 2, 2, '2023-02-28'),
+    (1, 5, 15, 'Старая черная дубленка', 2, 26, NULL, 3, 2, '2023-11-10'),
+    (1, 6, 16, 'Синяя демосезонная куртка', 11, 1, 10, 3, 2, '2023-11-10');
+
+
+
+
+
+
 
 
 /*DROP TABLE IF EXISTS thinks_history;
@@ -376,8 +386,10 @@ CREATE TABLE thinks_history(
     new_name VARCHAR(200) COMMENT 'Новое наименование вещи',
     old_th_count INT UNSIGNED COMMENT 'Старое кол-во',
     new_th_count INT UNSIGNED COMMENT 'Новое кол-во',
-    old_storage_id INT UNSIGNED COMMENT 'Старое место хранения',
-    new_storage_id INT UNSIGNED COMMENT 'Новое место хранения',
+    old_storage_id INT UNSIGNED COMMENT 'Старое хранилище',
+    new_storage_id INT UNSIGNED COMMENT 'Новое хранилище',
+    old_sub_storage_id INT UNSIGNED COMMENT 'Старое место нахождения',
+    new_sub_storage_id INT UNSIGNED COMMENT 'Новое место нахождения',
     old_th_status_id INT UNSIGNED COMMENT 'Старый статус вещи',
     new_th_status_id INT UNSIGNED COMMENT 'Новый статус вещи',
     old_owner_id INT UNSIGNED COMMENT 'Старый владелец',
@@ -386,6 +398,8 @@ CREATE TABLE thinks_history(
     FOREIGN KEY fk_think_id (think_id) REFERENCES thinks(id),
     FOREIGN KEY fk_old_storage_id (old_storage_id) REFERENCES storages(id) ON UPDATE CASCADE ON DELETE SET NULL,
     FOREIGN KEY fk_new_storage_id (new_storage_id) REFERENCES storages(id) ON UPDATE CASCADE ON DELETE SET NULL,
+    FOREIGN KEY fk_old_sub_storage_id (old_sub_storage_id) REFERENCES sub_storages(id) ON UPDATE CASCADE ON DELETE SET NULL,
+    FOREIGN KEY fk_new_sub_storage_id (new_sub_storage_id) REFERENCES sub_storages(id) ON UPDATE CASCADE ON DELETE SET NULL,
     FOREIGN KEY fk_old_th_status_id (old_th_status_id) REFERENCES th_statuses(id) ON UPDATE CASCADE ON DELETE SET NULL,
     FOREIGN KEY fk_new_th_status_id (new_th_status_id) REFERENCES th_statuses(id) ON UPDATE CASCADE ON DELETE SET NULL,
     FOREIGN KEY fk_old_owner_id (old_owner_id) REFERENCES owners(id) ON UPDATE CASCADE ON DELETE SET NULL,

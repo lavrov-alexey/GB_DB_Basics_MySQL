@@ -89,11 +89,11 @@ CREATE TABLE cat_sizes(
 
 DROP TABLE IF EXISTS cat_things_sizes;
 CREATE TABLE cat_things_sizes(
-    cat_things_id INT UNSIGNED NOT NULL,
-    cat_sizes_id INT UNSIGNED NOT NULL,
-    PRIMARY KEY (cat_things_id, cat_sizes_id),
-    FOREIGN KEY fk_cat_things_id(cat_things_id) REFERENCES cat_things(id),
-    FOREIGN KEY fk_cat_sizes(cat_sizes_id) REFERENCES cat_sizes(id)
+    cat_thing_id INT UNSIGNED NOT NULL,
+    cat_size_id INT UNSIGNED NOT NULL,
+    PRIMARY KEY (cat_thing_id, cat_size_id),
+    FOREIGN KEY fk_cat_thing_id(cat_thing_id) REFERENCES cat_things(id),
+    FOREIGN KEY fk_cat_size(cat_size_id) REFERENCES cat_sizes(id)
 ) COMMENT 'Связь категорий вещей и размеров';
 
 DROP TABLE IF EXISTS manufacturers;
@@ -105,6 +105,15 @@ CREATE TABLE manufacturers(
     is_deleted BOOL NOT NULL DEFAULT FALSE,
     UNIQUE (rus_name, eng_name)
 ) COMMENT 'Каталог производителей';
+
+DROP TABLE IF EXISTS cat_things_manufacts;
+CREATE TABLE cat_things_manufacts(
+    cat_thing_id INT UNSIGNED NOT NULL,
+    manufacturer_id INT UNSIGNED NOT NULL,
+    PRIMARY KEY (cat_thing_id, manufacturer_id),
+    FOREIGN KEY fk_cat_thing_id(cat_thing_id) REFERENCES cat_things(id),
+    FOREIGN KEY fk_manufacturer_id(manufacturer_id) REFERENCES manufacturers(id)
+) COMMENT 'Связь категорий вещей и производителей';
 
 DROP TABLE IF EXISTS th_statuses;
 CREATE TABLE th_statuses(

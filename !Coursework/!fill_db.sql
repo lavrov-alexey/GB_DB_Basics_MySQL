@@ -223,7 +223,7 @@ INSERT INTO cat_things (alias, name) VALUES
     ('Ткстл', 'Текстиль (пост. белье, полотенца и пр.)'),
     ('Игршк', 'Детские игрушки'),
     ('Инстр', 'Инструменты'),
-    ('Прбр', 'Различные приборы'),
+    ('Устр', 'Различные устройства, приборы'),
     ('Псд', 'Различная посуда'),
     ('БтХим', 'Бытовая химия'),
     ('УчМат', 'Материалы и пр. обеспечение для учебы');
@@ -259,14 +259,14 @@ INSERT INTO cat_sizes (alias, rus_size, int_size) VALUES
 
 /*DROP TABLE IF EXISTS cat_things_sizes;
 CREATE TABLE cat_things_sizes(
-    cat_things_id INT UNSIGNED NOT NULL,
-    cat_sizes_id INT UNSIGNED NOT NULL,
-    PRIMARY KEY (cat_things_id, cat_sizes_id),
-    FOREIGN KEY fk_cat_things_id(cat_things_id) REFERENCES cat_things(id),
-    FOREIGN KEY fk_cat_sizes(cat_sizes_id) REFERENCES cat_sizes(id)
+    cat_thing_id INT UNSIGNED NOT NULL,
+    cat_size_id INT UNSIGNED NOT NULL,
+    PRIMARY KEY (cat_thing_id, cat_size_id),
+    FOREIGN KEY fk_cat_thing_id(cat_thing_id) REFERENCES cat_things(id),
+    FOREIGN KEY fk_cat_size(cat_size_id) REFERENCES cat_sizes(id)
 ) COMMENT 'Связь категорий вещей и размеров';*/
 
-INSERT INTO cat_things_sizes (cat_things_id, cat_sizes_id) VALUES
+INSERT INTO cat_things_sizes (cat_thing_id, cat_size_id) VALUES
     (1, 1), (1, 2), (1, 3), (1, 4), (1, 5), (1, 6), (1, 7),
     (2, 8), (2, 9), (2, 10), (2, 11), (2, 12), (2, 13), (2, 14), (2, 15), (2, 16), (2, 17),
     (3, 1), (3, 2), (3, 3), (3, 4), (3, 5), (3, 6), (3, 7),
@@ -291,7 +291,23 @@ INSERT INTO manufacturers (rus_name, eng_name) VALUES
     ('Футурино', 'Futurino'), ('Хуппа', 'Huppa'), ('Лесси', 'Lassie'), ('Модис', 'MODIS'), 
     ('Рейма', 'Reima'), ('Села', 'Sela'), ('Котофей', NULL), ('Антилопа', 'Antilopa'), 
     ('Кроксы', 'CROCS'), ('Димар', 'Demar'), ('Куома', 'Kuoma'), (NULL, 'Shark Force'), 
-    (NULL, 'ANBER DERI'), ('Коламбия', 'Columbia'), ('Глория Джинс', 'Gloria Jeans');
+    (NULL, 'ANBER DERI'), ('Коламбия', 'Columbia'), ('Глория Джинс', 'Gloria Jeans'), 
+    ('Тошиба', 'Toshiba'), ('Онкио', 'Onkio');
+
+
+/*DROP TABLE IF EXISTS cat_things_manufacts;
+CREATE TABLE cat_things_manufacts(
+    cat_thing_id INT UNSIGNED NOT NULL,
+    manufacturer_id INT UNSIGNED NOT NULL,
+    PRIMARY KEY (cat_thing_id, manufacturer_id),
+    FOREIGN KEY fk_cat_thing_id(cat_thing_id) REFERENCES cat_things(id),
+    FOREIGN KEY fk_manufacturer_id(manufacturer_id) REFERENCES manufacturers(id)
+) COMMENT 'Связь категорий вещей и производителей';*/
+
+INSERT INTO cat_things_manufacts (cat_thing_id, manufacturer_id) VALUES
+    (9, 1), (12, 1), (13, 1), (14, 1), (1, 2), (2, 2), (3, 2), (4, 2), (1, 3), (2, 3), (3, 3), (4, 3),
+    (1, 4), (2, 4), (3, 4), (4, 4), (1, 5), (1, 15), (1, 16), (1, 17), (2, 5), (3, 5), (4, 5), 
+    (1, 6), (2, 6), (3, 6), (4, 6), (5, 10), (5, 11), (5, 12), (5, 13), (5, 14), (11, 19), (11, 20);
 
 
 /*DROP TABLE IF EXISTS th_statuses;
@@ -372,7 +388,8 @@ storage_id, sub_storage_id, th_status_id, owner_id, date_next_check) VALUES
     (1, 6, 17, 'Синяя демосезонная куртка', 11, 1, 10, 3, 2, '2023-11-10'),
     (6, 26, 1, 'Высокие ботинки с мехом', 2, 1, 9, 2, 2, '2023-04-01'),
     (5, 26, 1, 'Кожанные кроссовки', 1, 28, 116, 2, 2, '2023-04-01'),
-    (3, 6, 18, 'Джинсы', 11, 28, 122, 2, 2, '2023-04-01');
+    (3, 6, 18, 'Джинсы', 11, 28, 122, 2, 2, '2023-04-01'),
+    (11, NULL, 19, 'Телевизор FullHD 46"', 2, 23, NULL, 2, 1, '2023-12-01');
 
 
 
